@@ -1,0 +1,31 @@
+# Gradle
+.gradle
+
+# VSCode
+.settings/
+.vscode/
+
+# Intellij/Idea
+.factorypath
+.idea
+*.iml
+*.ipr
+*.iws
+
+# Build artifacts
+bin/
+build/
+jars/
+out/
+classes/
+
+# Debug artifacts
+run
+*.log
+
+# Windows
+*.db
+$RECYCLE.BIN/
+
+# Mac
+.DS_Store

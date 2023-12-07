@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "clientcrasher",
+  "version": "${version}",
+  "name": "ClientCrasher",
+  "description": "A new, better way to punish cheaters.",
+  "authors": [
+    "gotitim"
+  ],
+  "contact": {
+    "website": "https://modrinth.com/mod/clientcrasher",
+    "repo": "https://github.com/goteusz-maszyk/ClientCrasher-Fabric"
+  },
+  "license": "GPL-3.0",
+  "icon": "logo.png",
+  "environment": "server",
+  "entrypoints": {
+    "server": [
+      "me.gotitim.clientcrasher.ClientCrasher"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": ">=${minecraft_version}"
+  }
+}
