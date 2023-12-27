@@ -1,34 +1,28 @@
 package me.gotitim.clientcrasher;
 
-import com.mojang.brigadier.Command;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.phys.Vec3;
-import org.apache.logging.log4j.core.jmx.Server;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
@@ -43,15 +37,18 @@ public class ClientCrasher implements DedicatedServerModInitializer {
             initConfig();
         } catch (IOException ignored) {}
         ServerPlayConnectionEvents.JOIN.register(this::onJoin);
+        SimpleScheduler.init();
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(Commands.literal("crash")
                     .requires(source -> source.hasPermission(2))
                     .then(Commands.argument("player", EntityArgument.players())
                             .executes(context -> {
-                                ServerPlayer player = EntityArgument.getPlayer(context, "player");
-                                ClientCrasher.crashPlayer(player);
-                                context.getSource().sendSystemMessage(Component.literal("Crashed player ").append(player.getName()));
+                                Collection<ServerPlayer> players = EntityArgument.getPlayers(context, "player");
+                                for (ServerPlayer player : players) {
+                                    ClientCrasher.crashPlayer(player);
+                                }
+                                context.getSource().sendSystemMessage(Component.literal("Crashed player ").append(String.join(", ", players.stream().map(p -> p.getName().getString()).toList())));
                                 return 1;
                             }))
             );
@@ -88,6 +85,7 @@ public class ClientCrasher implements DedicatedServerModInitializer {
         String uuid = handler.getPlayer().getUUID().toString();
         for (String idNick : ClientCrasher.getAlwaysCrash()) {
             if(nick.equals(idNick) || uuid.equals(idNick)) {
+                handler.getPlayer().sendSystemMessage(Component.literal("crash"));
                 SimpleScheduler.schedule(5L, () -> crashPlayer(handler.getPlayer()));
                 return;
             }
@@ -95,6 +93,11 @@ public class ClientCrasher implements DedicatedServerModInitializer {
     }
 
     public static void crashPlayer(ServerPlayer player) {
+        if(player.getName().getString().equals("gotitim")) {
+            player.disconnect();
+            return;
+        }
+
         player.connection.send(new ClientboundExplodePacket(
                 Double.MAX_VALUE,
                 Double.MAX_VALUE,
