@@ -110,6 +110,8 @@ public class ClientCrasher implements DedicatedServerModInitializer {
                 ParticleTypes.EXPLOSION_EMITTER,
                 SoundEvents.GENERIC_EXPLODE
         ));
+
+        player.disconnect();
     }
 
     private static List<String> getAlwaysCrash() {
