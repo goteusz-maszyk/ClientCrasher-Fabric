@@ -10,14 +10,16 @@ public final class SimpleScheduler {
     private static final Map<Long, MutablePair<Long, Runnable>> tasks = new HashMap<>();
     private static long taskId = 0;
     public static void init() {
-        ServerTickEvents.END_SERVER_TICK.register(server -> {
-            tasks.forEach((id, task) -> {
-                if (task.getLeft() != 0) {
-                    task.setLeft(task.left - 1);
+        ServerTickEvents.END_SERVER_TICK.register(_ -> {
+            for (var entry : tasks.entrySet()) {
+                var pair = entry.getValue();
+                if (pair.left != 0) {
+                    pair.setLeft(pair.left - 1);
                     return;
                 }
-                task.getRight().run();
-            });
+                pair.right.run();
+                tasks.remove(entry.getKey());
+            }
         });
     }
 

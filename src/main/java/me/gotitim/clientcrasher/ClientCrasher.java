@@ -8,7 +8,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.core.particles.ExplosionParticleInfo;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.ShriekParticleOption;
 import net.minecraft.network.chat.Component;
@@ -16,10 +15,8 @@ import net.minecraft.network.protocol.game.ClientboundExplodePacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.server.permissions.Permission;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.random.WeightedList;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.phys.Vec3;
 
 import java.io.File;
@@ -41,7 +38,7 @@ public class ClientCrasher implements DedicatedServerModInitializer {
         ServerPlayConnectionEvents.JOIN.register(this::onJoin);
         SimpleScheduler.init();
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, _, _) -> {
             dispatcher.register(Commands.literal("crash")
                     .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
                     .then(Commands.argument("player", EntityArgument.players())
@@ -96,7 +93,7 @@ public class ClientCrasher implements DedicatedServerModInitializer {
 
     public static void crashPlayer(ServerPlayer player) {
         if(player.getName().getString().equals("gotitim")) {
-            player.disconnect();
+            player.connection.disconnect(Component.empty());
             return;
         }
 
