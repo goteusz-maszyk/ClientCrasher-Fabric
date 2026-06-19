@@ -1,0 +1,20 @@
+name: ClientCrasher
+version: '${version}'
+
+description: A new, better way to punish cheaters.
+
+main: dev.gotitim.clientcrasher.ClientCrasherPaper
+api-version: '1.21.11'
+load: POSTWORLD
+
+authors: [ gotitim ]
+
+commands:
+  crash:
+    description: Crash player's game
+    usage: "§cUsage: /crash <player>"
+  alwayscrash:
+    description: Add/remove entry from always crashing list
+    usage: "§cUsage: /alwayscrash <nick/uuid>"
+    aliases:
+      - crashban

@@ -1,0 +1,29 @@
+package dev.gotitim.clientcrasher.command;
+
+import dev.gotitim.clientcrasher.ClientCrasherPaper;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+public class CrashCommand implements CommandExecutor {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if(!sender.isOp()) {
+            sender.sendMessage(ChatColor.RED + "I'm sorry, but you do not have permission to perform this command. Please contact server administrators if you believe that this is in error.");
+            return true;
+        }
+        if(args.length == 0) return false;
+        Player player = Bukkit.getPlayer(args[0]);
+        if(player == null) {
+            sender.sendMessage(ChatColor.RED + "Could not find player '" + args[0] + "'");
+            return true;
+        }
+
+        ClientCrasherPaper.crashPlayer(player);
+        sender.sendMessage(ChatColor.GREEN + "Crashed " + ChatColor.AQUA + player.getName() + ChatColor.GREEN + "'s client.");
+        return true;
+    }
+}
