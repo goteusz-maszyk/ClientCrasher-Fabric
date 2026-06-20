@@ -25,7 +25,7 @@ tasks {
     }
 
     processResources {
-        val props = mapOf("version" to version)
+        val props = mapOf("version" to version, "minecraft_version" to minecraft_version)
         filesMatching("plugin.yml") {
             expand(props)
         }

@@ -4,7 +4,7 @@ version: '${version}'
 description: A new, better way to punish cheaters.
 
 main: dev.gotitim.clientcrasher.ClientCrasherPaper
-api-version: '1.21.11'
+api-version: '${minecraft_version}'
 load: POSTWORLD
 
 authors: [ gotitim ]
